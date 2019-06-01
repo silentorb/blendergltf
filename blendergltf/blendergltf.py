@@ -7,6 +7,7 @@ import struct
 import bpy
 import mathutils
 
+from blendergltf.exporters.base import get_custom_properties
 from .exporters import (
     Buffer,
     Reference,
@@ -116,6 +117,10 @@ def export_joint(state, bone):
         gltf_joint['rotation'],
         gltf_joint['scale']
     ) = _decompose(matrix)
+
+    extras = get_custom_properties(bone)
+    if extras:
+        gltf_joint['extras'] = extras
 
     return gltf_joint
 

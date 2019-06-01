@@ -15,6 +15,19 @@ _IGNORED_CUSTOM_PROPS = [
     'cycles_visibility',
 ]
 
+def get_custom_properties(blender_data):
+    custom_props = {
+        key: value.to_list() if hasattr(value, 'to_list') else value
+        for key, value in blender_data.items()
+        if key not in _IGNORED_CUSTOM_PROPS
+    }
+
+    custom_props = {
+        key: value for key, value in custom_props.items()
+        if _is_serializable(value)
+    }
+
+    return custom_props
 
 # pylint: disable=unused-argument
 class BaseExporter:
@@ -23,18 +36,7 @@ class BaseExporter:
 
     @classmethod
     def get_custom_properties(cls, blender_data):
-        custom_props = {
-            key: value.to_list() if hasattr(value, 'to_list') else value
-            for key, value in blender_data.items()
-            if key not in _IGNORED_CUSTOM_PROPS
-        }
-
-        custom_props = {
-            key: value for key, value in custom_props.items()
-            if _is_serializable(value)
-        }
-
-        return custom_props
+        return get_custom_properties(blender_data)
 
     @classmethod
     def check(cls, state, blender_data):
