@@ -1,16 +1,20 @@
-import json
 
 
-def _is_serializable(value):
-    try:
-        json.dumps(value)
-        return True
-    except TypeError:
-        return False
+def is_primitive(value):
+    return isinstance(value, (str, int, float, bool))
 
+
+def _custom_property_to_plain_data(value):
+    if is_primitive(value):
+        return value
+    else:
+        return value.to_dict()
 
 _IGNORED_CUSTOM_PROPS = [
     '_RNA_UI',
+    'background_color',
+    'frames_per_second',
+    'namedlayers',
     'cycles',
     'cycles_visibility',
 ]
@@ -23,8 +27,7 @@ def get_custom_properties(blender_data):
     }
 
     custom_props = {
-        key: value for key, value in custom_props.items()
-        if _is_serializable(value)
+        key: _custom_property_to_plain_data(value) for key, value in custom_props.items()
     }
 
     return custom_props
